@@ -1,9 +1,9 @@
-use std::io::{BufReader, Cursor};
+use std::io::{BufReader, Cursor, stdout};
 use std::thread::{self, JoinHandle};
 use tokio_tungstenite::{connect_async, tungstenite::protocol::Message};
 use futures::stream::StreamExt;
 use serde_json::{Value};
-use rodio::Decoder;
+use rodio::decoder::mp3::Mp3Decoder;
 
 fn print_begin() {
     println!(r#"
@@ -29,13 +29,13 @@ async fn wss() {
 fn get_audio() -> JoinHandle<()>{
     thread::spawn(move || {
         let url = "https://coderadio-admin.freecodecamp.org/radio/8010/radio.mp3";
-        let url = "http://websrvr90va.audiovideoweb.com/va90web25003/companions/Foundations%20of%20Rock/13.01.mp3";
+        // let url = "http://websrvr90va.audiovideoweb.com/va90web25003/companions/Foundations%20of%20Rock/13.01.mp3";
         let mut res = reqwest::blocking::get(url).unwrap();
         // println!("{:?}", res.bytes().unwrap());
-        let mut cursor = Cursor::new(res.bytes().unwrap());
+        // let mut cursor = Cursor::new(res.bytes().unwrap());
         let (_stream, handle) = rodio::OutputStream::try_default().unwrap();
         let sink = rodio::Sink::try_new(&handle).unwrap();
-        let mut data = Decoder::new(cursor).unwrap();
+        let mut data = Mp3Decoder::new(res).unwrap();
         sink.append(data);
         sink.sleep_until_end();
     })

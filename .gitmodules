@@ -1,0 +1,3 @@
+[submodule "patches/rodio"]
+	path = patches/rodio
+	url = https://github.com/zhangyemengren/rodio.git
